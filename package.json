@@ -9,7 +9,8 @@
     "serve": "serve dist -p 8501",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "start": "serve -s build"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
