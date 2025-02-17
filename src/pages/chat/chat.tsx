@@ -1,17 +1,27 @@
+// src/components/Chat.tsx
+
 import { useState } from "react";
-import { PreviewMessage, ThinkingMessage } from "../../components/custom/message";
-import { useScrollToBottom } from '@/components/custom/use-scroll-to-bottom';
+import { PreviewMessage, ThinkingMessage, SearchResultsMessage } from "@/components/custom/message";
+import { useScrollToBottom } from "@/components/custom/use-scroll-to-bottom";
 import { Overview } from "@/components/custom/overview";
 import { Header } from "@/components/custom/header";
-import { v4 as uuidv4 } from 'uuid';
-import fetchChatbotResponse from "@/api/chatbot"; // Import your fetchChatbotResponse function
-import { ChatInput } from "@/components/custom/chatinput"; // Import the updated ChatInput component
-import { fetchLiveScores, fetchUpcomingFixtures, fetchLeagueMatches } from "@/api/sportsdb"; // Import sports API functions
+import { v4 as uuidv4 } from "uuid";
+import fetchChatbotResponse from "@/api/chatbot"; // Your function for general queries
+import { ChatInput } from "@/components/custom/chatinput";
+// If you have sports functions, import them (or remove if not used)
+// import { fetchLiveScores, fetchUpcomingFixtures, fetchLeagueMatches } from "@/api/sportsdb";
+
+interface SearchResult {
+  title: string;
+  snippet: string;
+  link: string;
+}
 
 interface Message {
-  content: string;
+  content: string | SearchResult[];
   role: "user" | "assistant";
   id: string;
+  type?: "text" | "searchResults";
 }
 
 export function Chat() {
@@ -20,51 +30,86 @@ export function Chat() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (query: string) => {
-    if (!query.trim() || isLoading) return; // Prevent empty submissions or multiple submissions while loading
+    if (!query.trim() || isLoading) return;
 
     setIsLoading(true);
 
-    // Add the user's message to the chat
+    // Add user's message
     const userMessageId = uuidv4();
-    setMessages((prev) => [...prev, { content: query, role: "user", id: userMessageId }]);
+    setMessages((prev) => [
+      ...prev,
+      { content: query, role: "user", id: userMessageId, type: "text" }
+    ]);
 
     try {
-      let chatbotResponse: string;
+      let chatbotResponse: string | SearchResult[];
 
-      // Handle sports-related queries
-      if (query.toLowerCase().includes("live scores")) {
-        chatbotResponse = await fetchLiveScores();
-      } else if (query.toLowerCase().includes("upcoming fixtures") || query.toLowerCase().includes("next matches")) {
-        const teamName = query.toLowerCase().replace("upcoming fixtures for", "").replace("next matches for", "").trim();
-        chatbotResponse = await fetchUpcomingFixtures(teamName);
-      } else if (query.toLowerCase().includes("english premier league") || query.toLowerCase().includes("premier league")) {
-        chatbotResponse = await fetchLeagueMatches("English Premier League");
+      // Example sports query handling – adjust or remove if you use a different API
+      const queryLower = query.toLowerCase();
+      if (
+        queryLower.includes("live scores") ||
+        queryLower.includes("fixture") ||
+        queryLower.includes("match") ||
+        queryLower.includes("score") ||
+        queryLower.includes("result")
+      ) {
+        // Here you can call your sports search function if desired.
+        // For now, we'll use the general fetchChatbotResponse to simulate a search response.
+        chatbotResponse = await fetchChatbotResponse(query);
       } else {
         // Handle general queries
         chatbotResponse = await fetchChatbotResponse(query);
       }
 
-      // Add the chatbot's response to the chat
+      // Add chatbot's response to the chat
       const chatbotMessageId = uuidv4();
-      setMessages((prev) => [...prev, { content: chatbotResponse, role: "assistant", id: chatbotMessageId }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          content: chatbotResponse,
+          role: "assistant",
+          id: chatbotMessageId,
+          type: Array.isArray(chatbotResponse) ? "searchResults" : "text"
+        }
+      ]);
     } catch (error) {
-      console.error("Error fetching chatbot response:", error);
-      // Add an error message to the chat
+      console.error("Error fetching response:", error);
       const errorMessageId = uuidv4();
-      setMessages((prev) => [...prev, { content: "An error occurred while fetching the response.", role: "assistant", id: errorMessageId }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          content: "An error occurred while fetching the response.",
+          role: "assistant",
+          id: errorMessageId,
+          type: "text"
+        }
+      ]);
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col min-w-0 h-dvh bg-background">
       <Header />
-      <div className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4" ref={messagesContainerRef}>
+      <div
+        className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
+        ref={messagesContainerRef}
+      >
         {messages.length === 0 && <Overview />}
-        {messages.map((message) => (
-          <PreviewMessage key={message.id} message={message} />
-        ))}
+        {messages.map((message) =>
+          message.type === "searchResults" ? (
+            <SearchResultsMessage
+              key={message.id}
+              results={message.content as SearchResult[]}
+            />
+          ) : (
+            <PreviewMessage
+              key={message.id}
+              message={{ ...message, content: message.content as string }}
+            />
+          )
+        )}
         {isLoading && <ThinkingMessage />}
         <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
       </div>
