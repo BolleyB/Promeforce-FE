@@ -7,12 +7,15 @@ import { Markdown } from "./markdown";
 import { MessageActions } from "@/components/custom/actions";
 import Link from "next/link";
 
+// Define a local ChatMessage interface to avoid naming conflicts
+export interface ChatMessage {
+  content: string | any[];
+  role: "user" | "assistant";
+  id: string;
+}
+
 interface MessageProps {
-  message: {
-    content: string | any[];
-    role: "user" | "assistant";
-    id: string;
-  };
+  message: ChatMessage;
 }
 
 export const PreviewMessage = ({ message }: MessageProps) => {
@@ -67,7 +70,10 @@ export const PreviewMessage = ({ message }: MessageProps) => {
               )}
             </div>
           )}
-          {message.role === "assistant" && <MessageActions message={message} />}
+
+          {message.role === "assistant" && (
+            <MessageActions message={message as ChatMessage} />
+          )}
         </div>
       </div>
     </motion.div>
@@ -125,7 +131,6 @@ export const SearchResultsMessage = ({ results }: { results: any[] }) => {
               </div>
             ))}
           </div>
-          {/* Optionally add message actions if needed */}
         </div>
       </div>
     </motion.div>
