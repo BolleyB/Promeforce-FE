@@ -1,5 +1,11 @@
-export interface message{
-    content:string;
-    role:string;
-    id:string;
-}
+export interface FixtureItem {
+    title: string;
+    snippet: string;
+    link: string;
+  }
+  
+  export interface message {
+    content: string | FixtureItem[];
+    role: "user" | "assistant";
+    id: string;
+  }

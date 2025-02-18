@@ -1,14 +1,12 @@
-export interface SearchResult {
+export interface FixtureItem {
   title: string;
   snippet: string;
   link: string;
 }
 
-export type ChatbotResponse = string | SearchResult[];
-
-const fetchChatbotResponse = async (query: string): Promise<ChatbotResponse> => {
+const fetchChatbotResponse = async (query: string): Promise<string | FixtureItem[]> => {
   try {
-    const response = await fetch(process.env.NEXT_PUBLIC_CHATBOT_URL || "https://promeforce-backend-production.up.railway.app/query", {
+    const response = await fetch("https://promeforce-backend-production.up.railway.app/query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,7 +19,20 @@ const fetchChatbotResponse = async (query: string): Promise<ChatbotResponse> => 
     }
 
     const data = await response.json();
-    return data.response; // Ensure your backend returns the correct format.
+    
+    // Add explicit type guard
+    const isFixtureItem = (item: any): item is FixtureItem => {
+      return typeof item === 'object' && 
+             'title' in item && 
+             'snippet' in item && 
+             'link' in item;
+    };
+
+    if (Array.isArray(data.response) && data.response.every(isFixtureItem)) {
+      return data.response;
+    }
+    
+    return data.response as string;
   } catch (error) {
     console.error("Error fetching chatbot response:", error);
     return "An error occurred while fetching the response.";
