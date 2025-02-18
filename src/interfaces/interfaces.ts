@@ -9,3 +9,10 @@ export interface FixtureItem {
     role: "user" | "assistant";
     id: string;
   }
+
+  export interface Conversation {
+    id: string;
+    title: string;
+    timestamp: number;
+    messages: Message[];
+  }

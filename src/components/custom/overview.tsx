@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion';
 import { MessageCircle, BotIcon } from 'lucide-react';
+import { SuggestedQuestions } from "./suggested-questions";
 
-export const Overview = () => {
+interface OverviewProps {
+  onSubmit: (question: string) => void;
+}
+
+export const Overview = ({ onSubmit }: OverviewProps) => {
   return (
-    <>
     <motion.div
       key="overview"
       className="max-w-3xl mx-auto md:mt-20"
@@ -12,19 +16,35 @@ export const Overview = () => {
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.75 }}
     >
-      <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
-        <p className="flex flex-row justify-center gap-4 items-center">
+      <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-row justify-center gap-4 items-center"
+        >
           <BotIcon size={44}/>
           <span>+</span>
           <MessageCircle size={44}/>
-        </p>
-        <p>
-          Welcome to <strong>Prome-Force</strong><br />
-          Your Go-To AI-Assistant for<br />
-          <strong>Sponsership</strong> and <strong>Busniess</strong>.
-        </p>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <p className="mb-8">
+            Welcome to <strong>Prome-Force</strong><br />
+            Your Go-To AI-Assistant for<br />
+            <strong>Sponsorship</strong> and <strong>Business</strong>.
+          </p>
+          
+          <h3 className="text-lg font-medium mb-4">
+            Get started with a question:
+          </h3>
+          
+          <SuggestedQuestions onSubmit={onSubmit} />
+        </motion.div>
       </div>
     </motion.div>
-    </>
   );
 };
