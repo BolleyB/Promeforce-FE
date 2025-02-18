@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { cx } from "classix";
 import { SparklesIcon } from "./icons";
 import { Markdown } from "./markdown";
-import { message, FixtureItem } from "../../interfaces/interfaces";
+import { Message, FixtureItem } from "../../interfaces/interfaces";
 import { MessageActions } from "@/components/custom/actions";
 
-export const PreviewMessage = ({ message }: { message: message }) => {
+export const PreviewMessage = ({ message }: { message: Message }) => {
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"

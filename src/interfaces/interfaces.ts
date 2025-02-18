@@ -4,7 +4,7 @@ export interface FixtureItem {
     link: string;
   }
   
-  export interface message {
+  export interface Message {
     content: string | FixtureItem[];
     role: "user" | "assistant";
     id: string;

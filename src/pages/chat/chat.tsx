@@ -6,11 +6,11 @@ import { Header } from "@/components/custom/header";
 import { v4 as uuidv4 } from 'uuid';
 import fetchChatbotResponse from "@/api/chatbot";
 import { ChatInput } from "@/components/custom/chatinput";
-import { FixtureItem, message } from "@/interfaces/interfaces";
+import { Message } from "@/interfaces/interfaces";
 
 export function Chat() {
   const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
-  const [messages, setMessages] = useState<message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (query: string) => {
