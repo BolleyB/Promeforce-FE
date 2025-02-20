@@ -5,17 +5,19 @@ export interface FixtureItem {
   link: string;
 }
 
-const fetchChatbotResponse = async (query: string, deepSearch: boolean = false): Promise<string | FixtureItem[]> => {
+const fetchChatbotResponse = async (query: string, deepSearch: boolean = false, sessionId?: string): Promise<string | FixtureItem[]> => {
   try {
     const response = await fetch("https://promeforce-backend-production.up.railway.app/query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Session-ID": sessionId || "", // Pass session ID in headers
       },
       body: JSON.stringify({ 
         query,
-        top_k: 5, // Consistent with backend default
-        deep_search: deepSearch // Include deepSearch in the payload
+        top_k: 5,
+        deep_search: deepSearch,
+        session_id: sessionId, // Include session_id in body
       }),
     });
 
@@ -32,8 +34,10 @@ const fetchChatbotResponse = async (query: string, deepSearch: boolean = false):
              'link' in item;
     };
 
-    if (Array.isArray(data.response) && data.response.every(isFixtureItem)) {
-      return data.response;
+    if (Array.isArray(data.response)) {
+      if (data.response.every(isFixtureItem)) {
+        return data.response;
+      }
     }
     
     return data.response as string;

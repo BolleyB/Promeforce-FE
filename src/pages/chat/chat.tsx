@@ -10,8 +10,7 @@ import { useScrollToBottom } from '@/components/custom/use-scroll-to-bottom';
 import { Button } from "@/components/ui/button";
 import { Message, Conversation } from "@/interfaces/interfaces";
 import fetchChatbotResponse from "@/api/chatbot";
-import { Plus, Trash2 } from "lucide-react";
-
+import { Plus, Trash2, Menu, X } from "lucide-react"; // Removed ReactMarkdown
 
 export function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -19,6 +18,8 @@ export function Chat() {
   const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDeepSearch, setIsDeepSearch] = useState<boolean>(false);
+  const [sessionId] = useState<string>(uuidv4());
+  const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(true);
 
   useEffect(() => {
     const saved = localStorage.getItem("conversations");
@@ -85,7 +86,7 @@ export function Chat() {
     updateConversationMessages(newMessages);
 
     try {
-      const response = await fetchChatbotResponse(query, isDeepSearch);
+      const response = await fetchChatbotResponse(query, isDeepSearch, sessionId);
       const chatbotMessageId = uuidv4();
       const updatedMessages: Message[] = [
         ...newMessages,
@@ -113,10 +114,18 @@ export function Chat() {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarVisible(prev => !prev);
+  };
+
   return (
     <div className="flex h-dvh bg-background">
       {/* Conversation History Sidebar */}
-      <div className="w-64 border-r flex flex-col flex-shrink-0">
+      <div
+        className={`border-r flex flex-col flex-shrink-0 transition-all duration-300 ${
+          isSidebarVisible ? "w-64" : "w-0"
+        } overflow-hidden`}
+      >
         <div className="p-2 border-b">
           <Button onClick={createNewConversation} className="w-full">
             <Plus size={16} className="mr-2" />
@@ -151,7 +160,17 @@ export function Chat() {
 
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
-        <Header />
+        <div className="flex items-center p-2 border-b">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="mr-2"
+          >
+            {isSidebarVisible ? <X size={20} /> : <Menu size={20} />}
+          </Button>
+          <Header />
+        </div>
         <div className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4" ref={messagesContainerRef}>
           {messages.length === 0 ? (
             <Overview onSubmit={handleSubmit} />
