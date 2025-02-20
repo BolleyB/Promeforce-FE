@@ -1,4 +1,4 @@
-// components/custom/suggested-questions.tsx
+// src/components/custom/suggested-questions.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,12 +22,13 @@ const questionSets = [
 ];
 
 interface SuggestedQuestionsProps {
-  onSubmit: (question: string) => void;
+  onSubmit: (question: string) => Promise<void>;
 }
 
 export function SuggestedQuestions({ onSubmit }: SuggestedQuestionsProps) {
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const cycleQuestions = setInterval(() => {
@@ -41,6 +42,15 @@ export function SuggestedQuestions({ onSubmit }: SuggestedQuestionsProps) {
     return () => clearInterval(cycleQuestions);
   }, []);
 
+  const handleClick = async (question: string) => {
+    setLoadingStates(prev => ({ ...prev, [question]: true }));
+    try {
+      await onSubmit(question);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [question]: false }));
+    }
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
       <AnimatePresence mode="wait">
@@ -50,16 +60,20 @@ export function SuggestedQuestions({ onSubmit }: SuggestedQuestionsProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8"
           >
             {questionSets[currentSetIndex].map((question) => (
               <button
                 key={question}
-                onClick={() => onSubmit(question)}
-                className="text-left p-3 rounded-lg border hover:bg-accent transition-colors duration-200 text-sm"
+                onClick={() => handleClick(question)}
+                disabled={loadingStates[question]}
+                className={`
+                  text-left p-3 rounded-lg border hover:bg-accent transition-colors duration-200 text-sm
+                  ${loadingStates[question] ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
               >
-                {question}
+                {loadingStates[question] ? "Loading..." : question}
               </button>
             ))}
           </motion.div>

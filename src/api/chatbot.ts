@@ -4,7 +4,7 @@ export interface FixtureItem {
   link: string;
 }
 
-const fetchChatbotResponse = async (query: string): Promise<string | FixtureItem[]> => {
+const fetchChatbotResponse = async (query: string, isDeepSearch: boolean): Promise<string | FixtureItem[]> => {
   try {
     const response = await fetch("https://promeforce-backend-production.up.railway.app/query", {
       method: "POST",

@@ -1,3 +1,4 @@
+// src/components/custom/chat.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
@@ -16,8 +17,8 @@ export function Chat() {
   const [activeConversationId, setActiveConversationId] = useState<string>("");
   const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDeepSearch, setIsDeepSearch] = useState<boolean>(false);
 
-  // Load conversations from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("conversations");
     if (saved) {
@@ -25,12 +26,10 @@ export function Chat() {
     }
   }, []);
 
-  // Save conversations to localStorage when they change
   useEffect(() => {
     localStorage.setItem("conversations", JSON.stringify(conversations));
   }, [conversations]);
 
-  // Get current messages from active conversation
   const messages = conversations.find(c => c.id === activeConversationId)?.messages || [];
 
   const createNewConversation = () => {
@@ -68,7 +67,6 @@ export function Chat() {
   const handleSubmit = async (query: string) => {
     if (!query.trim() || isLoading) return;
 
-    // Create new conversation if none exists
     if (!activeConversationId) {
       createNewConversation();
     }
@@ -79,20 +77,20 @@ export function Chat() {
       ...messages,
       {
         content: query,
-        role: "user" as const,
+        role: "user",
         id: userMessageId
       }
     ];
     updateConversationMessages(newMessages);
 
     try {
-      const response = await fetchChatbotResponse(query);
+      const response = await fetchChatbotResponse(query, isDeepSearch);
       const chatbotMessageId = uuidv4();
       const updatedMessages: Message[] = [
         ...newMessages,
         {
           content: response,
-          role: "assistant" as const,
+          role: "assistant",
           id: chatbotMessageId
         }
       ];
@@ -104,7 +102,7 @@ export function Chat() {
         ...newMessages,
         { 
           content: "An error occurred while fetching the response.", 
-          role: "assistant" as const,
+          role: "assistant",
           id: errorMessageId 
         }
       ];
@@ -166,8 +164,13 @@ export function Chat() {
           )}
           <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
         </div>
-        <div className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
-          <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
+        <div className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl items-center">
+          <ChatInput 
+            onSubmit={handleSubmit} 
+            isLoading={isLoading} 
+            isDeepSearch={isDeepSearch} 
+            onToggleDeepSearch={setIsDeepSearch} 
+          />
         </div>
       </div>
     </div>

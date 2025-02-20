@@ -1,9 +1,10 @@
+// src/components/custom/overview.tsx
 import { motion } from 'framer-motion';
 import { MessageCircle, BotIcon } from 'lucide-react';
 import { SuggestedQuestions } from "./suggested-questions";
 
 interface OverviewProps {
-  onSubmit: (question: string) => void;
+  onSubmit: (question: string) => Promise<void>; // Updated to Promise<void>
 }
 
 export const Overview = ({ onSubmit }: OverviewProps) => {
@@ -22,9 +23,9 @@ export const Overview = ({ onSubmit }: OverviewProps) => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-row justify-center gap-4 items-center"
         >
-          <BotIcon size={44}/>
+          <BotIcon size={44} />
           <span>+</span>
-          <MessageCircle size={44}/>
+          <MessageCircle size={44} />
         </motion.div>
         
         <motion.div
