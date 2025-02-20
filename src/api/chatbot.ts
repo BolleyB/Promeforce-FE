@@ -1,17 +1,22 @@
+// src/api/chatbot.ts
 export interface FixtureItem {
   title: string;
   snippet: string;
   link: string;
 }
 
-const fetchChatbotResponse = async (query: string, isDeepSearch: boolean): Promise<string | FixtureItem[]> => {
+const fetchChatbotResponse = async (query: string, deepSearch: boolean = false): Promise<string | FixtureItem[]> => {
   try {
     const response = await fetch("https://promeforce-backend-production.up.railway.app/query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ 
+        query,
+        top_k: 5, // Consistent with backend default
+        deep_search: deepSearch // Include deepSearch in the payload
+      }),
     });
 
     if (!response.ok) {
@@ -20,7 +25,6 @@ const fetchChatbotResponse = async (query: string, isDeepSearch: boolean): Promi
 
     const data = await response.json();
     
-    // Add explicit type guard
     const isFixtureItem = (item: any): item is FixtureItem => {
       return typeof item === 'object' && 
              'title' in item && 
