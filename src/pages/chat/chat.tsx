@@ -12,6 +12,7 @@ import { Message, Conversation } from "@/interfaces/interfaces";
 import fetchChatbotResponse from "@/api/chatbot";
 import { Plus, Trash2 } from "lucide-react";
 
+
 export function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string>("");

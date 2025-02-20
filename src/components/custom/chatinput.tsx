@@ -46,7 +46,7 @@ export function ChatInput({ onSubmit, isLoading, isDeepSearch, onToggleDeepSearc
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="w-full p-2 pr-28 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 pr-36 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}
           />
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">

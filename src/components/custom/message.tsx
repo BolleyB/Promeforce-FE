@@ -1,11 +1,32 @@
+// src/components/custom/message.tsx
 import { motion } from "framer-motion";
 import { cx } from "classix";
 import { SparklesIcon } from "./icons";
 import { Markdown } from "./markdown";
-import { Message, FixtureItem } from "../../interfaces/interfaces";
+import { Message, FixtureItem, BackendResponse } from "../../interfaces/interfaces"; // Import BackendResponse
 import { MessageActions } from "@/components/custom/actions";
 
 export const PreviewMessage = ({ message }: { message: Message }) => {
+  // Type guard for FixtureItem array
+  const isFixtureItemArray = (content: Message["content"]): content is FixtureItem[] => {
+    return Array.isArray(content) && content.every(item => 
+      typeof item === 'object' && 
+      'title' in item && 
+      'snippet' in item && 
+      'link' in item
+    );
+  };
+
+  // Type guard for BackendResponse
+  const isBackendResponse = (content: Message["content"]): content is BackendResponse => {
+    return typeof content === 'object' && 
+           content !== null && 
+           'response' in content && 
+           typeof (content as any).response === 'string' && 
+           'sources' in content && 
+           Array.isArray((content as any).sources);
+  };
+
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"
@@ -31,7 +52,7 @@ export const PreviewMessage = ({ message }: { message: Message }) => {
           <div className="flex flex-col gap-4 text-left">
             {typeof message.content === 'string' ? (
               <Markdown>{message.content}</Markdown>
-            ) : Array.isArray(message.content) ? (
+            ) : isFixtureItemArray(message.content) ? (
               message.content.map((item: FixtureItem, index: number) => (
                 <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
                   <a
@@ -52,6 +73,29 @@ export const PreviewMessage = ({ message }: { message: Message }) => {
                   </a>
                 </div>
               ))
+            ) : isBackendResponse(message.content) ? (
+              <div>
+                <Markdown>{message.content.response}</Markdown>
+                {message.content.sources.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="font-semibold">Sources:</h4>
+                    <ul className="list-disc pl-5">
+                      {message.content.sources.map((source: { title: string; link: string }, index: number) => (
+                        <li key={index}>
+                          <a
+                            href={source.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            {source.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             ) : (
               <Markdown>Invalid response format</Markdown>
             )}
@@ -85,6 +129,7 @@ export const ThinkingMessage = () => {
         <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
           <SparklesIcon size={14} />
         </div>
+        <span>Thinking...</span>
       </div>
     </motion.div>
   );
