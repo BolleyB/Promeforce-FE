@@ -7,9 +7,8 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export default defineConfig(({ command, mode }) => {
-  const isBuild = command === 'build';
-  const isWidget = mode === 'widget';
+export default defineConfig(({ mode }) => {
+  const isWidget = mode === 'widget'; // Only need mode for widget check
 
   return {
     plugins: [react()],
@@ -26,9 +25,9 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     build: isWidget ? {
-      // Widget build
+      // Widget build configuration
       lib: {
-        entry: resolve(__dirname, 'src/main.tsx'), // Same entry as full app
+        entry: resolve(__dirname, 'src/main.tsx'),
         name: 'ChatWidget',
         fileName: (format) => `chat-widget.${format}.js`,
       },
@@ -39,7 +38,7 @@ export default defineConfig(({ command, mode }) => {
             react: 'React',
             'react-dom': 'ReactDOM',
           },
-          // Add inline CSS for widget-specific styles
+          // Inject widget-specific styles and div
           intro: `
             const style = document.createElement('style');
             style.textContent = \`
@@ -73,7 +72,6 @@ export default defineConfig(({ command, mode }) => {
               }
             \`;
             document.head.appendChild(style);
-            // Inject chat-widget div if not present
             if (!document.getElementById('chat-widget')) {
               const div = document.createElement('div');
               div.id = 'chat-widget';
@@ -85,7 +83,7 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist/widget',
       sourcemap: true,
     } : {
-      // Full app build
+      // Full app build configuration
       outDir: 'dist/app',
       sourcemap: true,
     },
