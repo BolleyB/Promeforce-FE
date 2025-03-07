@@ -4,22 +4,25 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const questionSets = [
+  // Set 1: Event-Based Activation Ideas
   [
-    "What are the top Premier League headlines from the last 24 hours?",
-    "List all football fixtures scheduled for today, March 4, 2025, with times and leagues.",
-    "Which football teams are playing matches tonight, March 4, 2025, and at what times?"
+    "What are the latest event-based activation ideas for sponsorship deals from the last 30 days?",
+    "List all innovative stadium activation ideas for sponsorship deals scheduled for this month’s events?",
+    "Which sponsorship activation ideas are trending for live sports events currently?"
   ],
+  // Set 2: Digital and Social Media Activation Ideas
   [
-    "What are the current UEFA Champions League standings as of March 4, 2025, including points and top 10 teams?",
-    "What’s the full NBA game schedule for tomorrow, March 5, 2025, with teams and tip-off times?",
-    "What are the results of cricket matches completed in the last 7 days as of March 4, 2025?"
+    "What are the current digital activation ideas for sponsorship deals, including platforms?",
+    "What’s the full list of mobile-based activation ideas for sponsorship deals launched in the last 7 days?",
+    "What are the results of social media campaigns as sponsorship activations completed in the last 14 days?"
   ],
+  // Set 3: Creative Collaboration and Mixed Activation Ideas
   [
-    "List all tennis tournaments starting within the next 30 days from March 4, 2025, with dates and locations.",
-    "What are the latest football transfer rumors reported in the last 48 hours as of March 4, 2025?",
-    "Who won the most recent Formula 1 race before March 4, 2025, and on what date?"
+    "What are the latest collaborative activation ideas for sponsorship deals within the next 30 days?",
+    "What are the latest transfer rumors impacting sponsorship activations reported in the last 48 hours?",
+    "Who provided the most recent sponsorship activation ideas, and what were they?"
   ]
-]
+];
 
 interface SuggestedQuestionsProps {
   onSubmit: (question: string) => Promise<void>;
