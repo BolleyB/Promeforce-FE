@@ -7,7 +7,7 @@ export interface FixtureItem {
 
 const fetchChatbotResponse = async (query: string, deepSearch: boolean = false, sessionId?: string): Promise<string | FixtureItem[]> => {
   try {
-    const response = await fetch("https://promeforce-backend-production.up.railway.app/query", {
+    const response = await fetch("https://promeforce-backend-testing.up.railway.app/query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
