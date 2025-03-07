@@ -19,7 +19,7 @@ const questionSets = [
     "What are the latest football transfer rumors reported in the last 48 hours as of March 4, 2025?",
     "Who won the most recent Formula 1 race before March 4, 2025, and on what date?"
   ]
-];eting
+]
 
 interface SuggestedQuestionsProps {
   onSubmit: (question: string) => Promise<void>;
