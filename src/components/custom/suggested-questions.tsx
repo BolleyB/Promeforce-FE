@@ -8,20 +8,20 @@ const questionSets = [
   [
     "What are the latest event-based activation ideas for sponsorship deals from the last 30 days?",
     "List all innovative stadium activation ideas for sponsorship deals scheduled for this month’s events?",
-    "Which sponsorship activation ideas are trending for live sports events currently?"
+    "Which sponsorship activation ideas are trending for live sports events currently?",
   ],
   // Set 2: Digital and Social Media Activation Ideas
   [
     "What are the current digital activation ideas for sponsorship deals, including platforms?",
     "What’s the full list of mobile-based activation ideas for sponsorship deals launched in the last 7 days?",
-    "What are the results of social media campaigns as sponsorship activations completed in the last 14 days?"
+    "What are the results of social media campaigns as sponsorship activations completed in the last 14 days?",
   ],
   // Set 3: Creative Collaboration and Mixed Activation Ideas
   [
     "What are the latest collaborative activation ideas for sponsorship deals within the next 30 days?",
     "What are the latest transfer rumors impacting sponsorship activations reported in the last 48 hours?",
-    "Who provided the most recent sponsorship activation ideas, and what were they?"
-  ]
+    "Who provided the most recent sponsorship activation ideas, and what were they?",
+  ],
 ];
 
 interface SuggestedQuestionsProps {
@@ -31,13 +31,17 @@ interface SuggestedQuestionsProps {
 export function SuggestedQuestions({ onSubmit }: SuggestedQuestionsProps) {
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
+    {},
+  );
 
   useEffect(() => {
     const cycleQuestions = setInterval(() => {
+      console.log("Setting interval called");
       setIsVisible(false);
       setTimeout(() => {
-        setCurrentSetIndex(prev => (prev + 1) % questionSets.length);
+        console.log("Set timeout called");
+        setCurrentSetIndex((prev) => (prev + 1) % questionSets.length);
         setIsVisible(true);
       }, 500);
     }, 10000);
@@ -46,11 +50,11 @@ export function SuggestedQuestions({ onSubmit }: SuggestedQuestionsProps) {
   }, []);
 
   const handleClick = async (question: string) => {
-    setLoadingStates(prev => ({ ...prev, [question]: true }));
+    setLoadingStates((prev) => ({ ...prev, [question]: true }));
     try {
       await onSubmit(question);
     } finally {
-      setLoadingStates(prev => ({ ...prev, [question]: false }));
+      setLoadingStates((prev) => ({ ...prev, [question]: false }));
     }
   };
 
@@ -73,7 +77,7 @@ export function SuggestedQuestions({ onSubmit }: SuggestedQuestionsProps) {
                 disabled={loadingStates[question]}
                 className={`
                   text-left p-3 rounded-lg border hover:bg-accent transition-colors duration-200 text-sm
-                  ${loadingStates[question] ? 'opacity-50 cursor-not-allowed' : ''}
+                  ${loadingStates[question] ? "opacity-50 cursor-not-allowed" : ""}
                 `}
               >
                 {loadingStates[question] ? "Loading..." : question}
